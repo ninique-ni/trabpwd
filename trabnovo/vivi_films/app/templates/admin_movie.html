@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="card" style="max-width:550px;margin:30px auto;
+     border:1px solid {{ '#ffc107' if is_release else '#29292e' }};">
+    <h2 style="color: {{ '#ffc107' if is_release else '#e50914' }}; text-align:center;">
+        {{ '🔥 Filme em Lançamento' if is_release else '🎬 Filme do Catálogo Geral' }}
+    </h2>
+    {% if is_release %}
+        <p style="color:#aaa;text-align:center;font-size:13px;margin-bottom:16px;">
+            ⚠️ Este filme será apagado automaticamente após 15 dias.
+        </p>
+    {% endif %}
+
+    {% set h = (movie.duration_minutes // 60) if movie else 2 %}
+    {% set m = (movie.duration_minutes % 60) if movie else 0 %}
+
+    <form method="POST">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+        <label>Título</label>
+        <input type="text" name="title" value="{{ movie.title if movie else '' }}" required
+               style="width:100%;padding:10px;margin-bottom:12px;background:#121214;border:1px solid #29292e;color:#fff;border-radius:4px;">
+
+        <label>Gênero</label>
+        <input type="text" name="genre" value="{{ movie.genre if movie else '' }}" required
+               style="width:100%;padding:10px;margin-bottom:12px;background:#121214;border:1px solid #29292e;color:#fff;border-radius:4px;">
+
+        <div style="display:flex;gap:10px;margin-bottom:12px;">
+            <div style="flex:1;">
+                <label>Horas</label>
+                <input type="number" name="hours" min="0" value="{{ h }}" required
+                       style="width:100%;padding:10px;background:#121214;border:1px solid #29292e;color:#fff;border-radius:4px;">
+            </div>
+            <div style="flex:1;">
+                <label>Minutos</label>
+                <input type="number" name="minutes" min="0" max="59" value="{{ m }}" required
+                       style="width:100%;padding:10px;background:#121214;border:1px solid #29292e;color:#fff;border-radius:4px;">
+            </div>
+        </div>
+
+        <label>Link do Trailer (YouTube)</label>
+        <input type="url" name="trailer_url" value="{{ movie.trailer_url if movie else '' }}"
+               placeholder="https://www.youtube.com/watch?v=..."
+               style="width:100%;padding:10px;margin-bottom:16px;background:#121214;border:1px solid #29292e;color:#fff;border-radius:4px;">
+
+        <button type="submit" class="btn"
+                style="width:100%; {{ 'background:#ffc107;color:#000;' if is_release else '' }}">
+            {{ 'Salvar Alterações' if movie else 'Adicionar Filme' }}
+        </button>
+    </form>
+    <a href="{{ url_for('routes.home') }}" class="btn-secondary"
+       style="display:block;text-align:center;margin-top:10px;">Cancelar</a>
+</div>
+{% endblock %}

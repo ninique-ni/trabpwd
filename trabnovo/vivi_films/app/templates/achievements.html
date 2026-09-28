@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>🏆 Minhas Conquistas</h2>
+<p style="color:#aaa;margin-bottom:20px;">Desbloqueie todas interagindo com a plataforma!</p>
+
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:20px;">
+    {% for a in todas %}
+        {% set desbloqueada = a.id in desbloqueadas_ids %}
+        <div class="card" style="text-align:center; opacity: {{ '1' if desbloqueada else '0.4' }};
+             border: 2px solid {{ '#ffc107' if desbloqueada else '#29292e' }};">
+            <div style="font-size:48px;margin-bottom:10px;">{{ a.icon }}</div>
+            <h3 style="color:{{ '#ffc107' if desbloqueada else '#888' }};">{{ a.name }}</h3>
+            <p style="color:#aaa;font-size:13px;margin-top:8px;">{{ a.description }}</p>
+            {% if desbloqueada %}
+                <p style="color:#28a745;font-weight:bold;margin-top:10px;">✔ Desbloqueada</p>
+            {% else %}
+                <p style="color:#888;margin-top:10px;">🔒 Bloqueada</p>
+            {% endif %}
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Minha Biblioteca Pessoal</h2>
+
+<h3 style="color:#e50914;margin-top:20px;">Filmes Assistidos</h3>
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:15px;margin-bottom:30px;">
+    {% for item in watched %}
+        <div class="card">
+            <h4>{{ item.movie.title }}</h4>
+            <p><strong>Gênero:</strong> {{ item.movie.genre }}</p>
+            <p style="color:#ffc107;"><strong>Nota:</strong> {{ item.rating }}/5 ⭐</p>
+            {% if item.comment %}
+                <p style="font-size:13px;color:#aaa;margin-top:5px;"><em>"{{ item.comment }}"</em></p>
+            {% endif %}
+        </div>
+    {% else %}
+        <p style="color:#888;">Nenhum filme assistido.</p>
+    {% endfor %}
+</div>
+
+<h3 style="color:#ffc107;">Para Assistir</h3>
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:15px;">
+    {% for item in unwatched %}
+        <div class="card">
+            <h4>{{ item.movie.title }}</h4>
+            <p><strong>Gênero:</strong> {{ item.movie.genre }}</p>
+
+            <form method="POST" action="{{ url_for('routes.mark_as_watched', item_id=item.id) }}"
+                  style="margin-top:10px;border-top:1px solid #29292e;padding-top:10px;">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <label style="font-size:13px;">Nota:</label>
+                <select name="rating" style="width:100%;padding:5px;background:#121214;color:#fff;margin-bottom:5px;">
+                    <option value="5">5 - Excelente ⭐⭐⭐⭐⭐</option>
+                    <option value="4">4 - Muito Bom ⭐⭐⭐⭐</option>
+                    <option value="3">3 - Bom ⭐⭐⭐</option>
+                    <option value="2">2 - Regular ⭐⭐</option>
+                    <option value="1">1 - Ruim ⭐</option>
+                </select>
+                <textarea name="comment" placeholder="Comentário..."
+                          style="width:100%;background:#121214;color:#fff;padding:5px;margin-bottom:5px;"></textarea>
+                <button type="submit" class="btn" style="width:100%;">Marcar como Assistido</button>
+            </form>
+        </div>
+    {% else %}
+        <p style="color:#888;">Lista vazia.</p>
+    {% endfor %}
+</div>
+{% endblock %}

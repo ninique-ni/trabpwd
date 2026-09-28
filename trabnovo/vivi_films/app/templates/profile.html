@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="card" style="max-width: 520px; margin: 30px auto;">
+    <h2 style="color: #e50914; text-align: center;">Meu Perfil</h2>
+
+    <div style="text-align: center; margin-bottom: 20px;">
+        <img src="{{ url_for('static', filename='profile_pics/' + current_user.profile_pic) }}"
+             alt="Foto"
+             style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 3px solid #e50914;"
+             onerror="this.src='https://via.placeholder.com/120/1f1f1f/ffffff?text=User';">
+    </div>
+
+    <form method="POST" action="{{ url_for('routes.profile') }}" enctype="multipart/form-data">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+        <label>Nova Foto de Perfil</label>
+        <input type="file" name="profile_pic" accept="image/*"
+               style="width:100%;margin-bottom:16px;background:#121214;padding:8px;color:#fff;border-radius:4px;">
+
+        <label>Nome de Usuário</label>
+        {% if current_user.is_admin %}
+            <input type="text" value="{{ current_user.username }}" disabled
+                   style="width:100%;padding:10px;background:#29292e;border:1px solid #333;color:#aaa;border-radius:4px;margin-bottom:6px;">
+            <small style="color:#888;">Admin não pode alterar o nome.</small>
+        {% else %}
+            <input type="text" name="username" value="{{ current_user.username }}" required
+                   style="width:100%;padding:10px;background:#121214;border:1px solid #29292e;color:#fff;border-radius:4px;margin-bottom:6px;">
+            <small style="color:#e50914;">Deve começar com '@' e conter '_'. Troca permitida a cada 7 dias.</small>
+        {% endif %}
+
+        <label style="margin-top:14px;display:block;">E-mail</label>
+        <input type="email" value="{{ current_user.email }}" disabled
+               style="width:100%;padding:10px;background:#29292e;border:1px solid #333;color:#aaa;border-radius:4px;">
+
+        <button type="submit" class="btn" style="width:100%;margin-top:16px;">Salvar Alterações</button>
+    </form>
+
+    {% if not current_user.is_admin %}
+        <hr style="margin:25px 0;border:none;border-top:1px solid #29292e;">
+        <h3 style="color:#dc3545;">Excluir Conta</h3>
+        <p style="color:#aaa;font-size:13px;margin-bottom:10px;">
+            Ação irreversível. Digite seu nome de usuário para confirmar.
+        </p>
+        <form method="POST" action="{{ url_for('routes.delete_account') }}"
+              onsubmit="return confirm('Tem certeza? Isso apaga TUDO.');">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input type="text" name="confirm_username" placeholder="{{ current_user.username }}" required
+                   style="width:100%;padding:10px;background:#121214;border:1px solid #29292e;color:#fff;border-radius:4px;margin-bottom:8px;">
+            <button type="submit" class="btn btn-danger" style="width:100%;">Excluir minha conta</button>
+        </form>
+    {% endif %}
+</div>
+{% endblock %}

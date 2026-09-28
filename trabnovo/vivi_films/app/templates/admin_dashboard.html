@@ -1,0 +1,163 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2 style="color:#e50914;">📊 Dashboard Administrativo</h2>
+
+<!-- KPIs -->
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:15px;margin-bottom:30px;">
+    <div class="card" style="text-align:center;">
+        <div style="font-size:32px;color:#e50914;">👥</div>
+        <h3 style="font-size:28px;">{{ total_users }}</h3>
+        <p style="color:#aaa;font-size:13px;">Usuários Cadastrados</p>
+    </div>
+    <div class="card" style="text-align:center;">
+        <div style="font-size:32px;color:#28a745;">✅</div>
+        <h3 style="font-size:28px;">{{ verificados }}</h3>
+        <p style="color:#aaa;font-size:13px;">Usuários Verificados</p>
+    </div>
+    <div class="card" style="text-align:center;">
+        <div style="font-size:32px;color:#ffc107;">🎬</div>
+        <h3 style="font-size:28px;">{{ total_filmes }}</h3>
+        <p style="color:#aaa;font-size:13px;">Filmes no Catálogo</p>
+    </div>
+    <div class="card" style="text-align:center;">
+        <div style="font-size:32px;color:#60a5fa;">⭐</div>
+        <h3 style="font-size:28px;">{{ total_avaliacoes }}</h3>
+        <p style="color:#aaa;font-size:13px;">Avaliações Feitas</p>
+    </div>
+</div>
+
+<!-- GRÁFICOS -->
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(400px,1fr));gap:20px;margin-bottom:30px;">
+
+    <div class="card">
+        <h3 style="margin-bottom:15px;">🎬 Top 5 Filmes Melhor Avaliados</h3>
+        {% if top_filmes %}
+            <canvas id="graficoTopFilmes" height="220"></canvas>
+        {% else %}
+            <p style="color:#888;">Nenhuma avaliação registrada ainda.</p>
+        {% endif %}
+    </div>
+
+    <div class="card">
+        <h3 style="margin-bottom:15px;">🎭 Gêneros Mais Populares</h3>
+        {% if generos %}
+            <canvas id="graficoGeneros" height="220"></canvas>
+        {% else %}
+            <p style="color:#888;">Nenhum dado ainda.</p>
+        {% endif %}
+    </div>
+
+    <div class="card">
+        <h3 style="margin-bottom:15px;">📈 Status dos Filmes nas Bibliotecas</h3>
+        {% if assistidos + nao_assistidos > 0 %}
+            <canvas id="graficoStatus" height="220"></canvas>
+        {% else %}
+            <p style="color:#888;">Nenhum filme nas bibliotecas ainda.</p>
+        {% endif %}
+    </div>
+
+    <div class="card">
+        <h3 style="margin-bottom:15px;">👥 Verificados vs. Não Verificados</h3>
+        <canvas id="graficoUsuarios" height="220"></canvas>
+    </div>
+</div>
+
+<!-- TABELA TOP FILMES -->
+{% if top_filmes %}
+<div class="card">
+    <h3 style="margin-bottom:15px;">🏆 Ranking Detalhado</h3>
+    <table style="width:100%;border-collapse:collapse;">
+        <thead>
+            <tr style="border-bottom:1px solid #29292e;">
+                <th style="text-align:left;padding:10px;color:#aaa;">#</th>
+                <th style="text-align:left;padding:10px;color:#aaa;">Filme</th>
+                <th style="text-align:right;padding:10px;color:#aaa;">Média</th>
+                <th style="text-align:right;padding:10px;color:#aaa;">Avaliações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for titulo, media, qtd in top_filmes %}
+            <tr style="border-bottom:1px solid #29292e;">
+                <td style="padding:10px;">{{ loop.index }}º</td>
+                <td style="padding:10px;">{{ titulo }}</td>
+                <td style="padding:10px;text-align:right;color:#ffc107;">⭐ {{ '%.2f'|format(media) }}</td>
+                <td style="padding:10px;text-align:right;">{{ qtd }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+
+<!-- Chart.js via CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script>
+Chart.defaults.color = '#e5e5e5';
+Chart.defaults.borderColor = '#29292e';
+
+{% if top_filmes %}
+new Chart(document.getElementById('graficoTopFilmes'), {
+    type: 'bar',
+    data: {
+        labels: [{% for t, m, q in top_filmes %}"{{ t }}",{% endfor %}],
+        datasets: [{
+            label: 'Média das notas',
+            data: [{% for t, m, q in top_filmes %}{{ '%.2f'|format(m) }},{% endfor %}],
+            backgroundColor: '#e50914',
+            borderRadius: 6,
+        }]
+    },
+    options: {
+        responsive: true,
+        scales: { y: { beginAtZero: true, max: 5 } },
+        plugins: { legend: { display: false } }
+    }
+});
+{% endif %}
+
+{% if generos %}
+new Chart(document.getElementById('graficoGeneros'), {
+    type: 'doughnut',
+    data: {
+        labels: [{% for g, c in generos %}"{{ g }}",{% endfor %}],
+        datasets: [{
+            data: [{% for g, c in generos %}{{ c }},{% endfor %}],
+            backgroundColor: ['#e50914','#ffc107','#60a5fa','#28a745','#a855f7','#f97316','#06b6d4','#ec4899'],
+        }]
+    },
+    options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+});
+{% endif %}
+
+{% if assistidos + nao_assistidos > 0 %}
+new Chart(document.getElementById('graficoStatus'), {
+    type: 'pie',
+    data: {
+        labels: ['Assistidos', 'Para Assistir'],
+        datasets: [{
+            data: [{{ assistidos }}, {{ nao_assistidos }}],
+            backgroundColor: ['#28a745', '#ffc107'],
+        }]
+    },
+    options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+});
+{% endif %}
+
+new Chart(document.getElementById('graficoUsuarios'), {
+    type: 'bar',
+    data: {
+        labels: ['Verificados', 'Não Verificados'],
+        datasets: [{
+            data: [{{ verificados }}, {{ total_users - verificados }}],
+            backgroundColor: ['#28a745', '#dc3545'],
+            borderRadius: 6,
+        }]
+    },
+    options: {
+        responsive: true,
+        indexAxis: 'y',
+        plugins: { legend: { display: false } }
+    }
+});
+</script>
+{% endblock %}

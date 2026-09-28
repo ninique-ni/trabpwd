@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Chats por Afinidade</h2>
+<p style="color:#a8a8b3;margin-bottom:20px;">
+    O sistema conecta você automaticamente com quem curte os mesmos gêneros.
+</p>
+
+<div style="display:flex;flex-direction:column;gap:15px;">
+    {% for room in rooms %}
+        {% set other = room.other_user(current_user.id) %}
+        {% set my_status = room.status_of(current_user.id) %}
+        {% set other_status = room.status_user2 if room.user1_id == current_user.id else room.status_user1 %}
+
+        <div class="card" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
+            <div>
+                <h3>{{ other.username }}</h3>
+                <p style="font-size:13px;color:#aaa;">{{ other.country }}</p>
+            </div>
+
+            <div>
+                {% if my_status == 'pending' %}
+                    <span>Aceitar chat?</span>
+                    <a href="{{ url_for('routes.chat_response', room_id=room.id, action='accepted') }}" class="btn">Sim</a>
+                    <a href="{{ url_for('routes.chat_response', room_id=room.id, action='rejected') }}" class="btn-secondary">Não</a>
+                {% elif my_status == 'accepted' and other_status == 'accepted' %}
+                    <a href="{{ url_for('routes.room_view', room_id=room.id) }}" class="btn">Abrir Chat</a>
+                    <a href="{{ url_for('routes.clear_chat', room_id=room.id) }}" class="btn-secondary">Limpar</a>
+                {% elif my_status == 'rejected' or other_status == 'rejected' %}
+                    <span style="color:#dc3545;font-weight:bold;">Chat Recusado</span>
+                {% else %}
+                    <span style="color:#ffc107;">Aguardando o outro aceitar...</span>
+                {% endif %}
+            </div>
+        </div>
+    {% else %}
+        <p style="color:#888;">Nenhuma afinidade encontrada ainda. Adicione mais filmes!</p>
+    {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Chat com {{ other_user.username }}</h2>
+<a href="{{ url_for('routes.chats') }}" class="btn-secondary" style="margin-bottom:15px;">← Voltar</a>
+
+<div class="card" style="max-height:500px;overflow-y:auto;margin-bottom:15px;">
+    {% for msg in messages %}
+        <div style="margin-bottom:12px; padding:8px; border-radius:6px;
+                    background:{{ '#2d1a1a' if msg.sender_id == current_user.id else '#1a1a2d' }};">
+            <strong style="color:{{ '#e50914' if msg.sender_id == current_user.id else '#60a5fa' }};">
+                {{ msg.sender.username }}
+            </strong>
+            <small style="color:#888;margin-left:10px;">{{ msg.timestamp.strftime('%d/%m %H:%M') }}</small>
+            <p style="margin-top:5px;">{{ msg.content }}</p>
+        </div>
+    {% else %}
+        <p style="color:#888;">Nenhuma mensagem ainda. Diga um oi! 👋</p>
+    {% endfor %}
+</div>
+
+<form method="POST">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <textarea name="content" placeholder="Digite sua mensagem..." required
+              style="width:100%;padding:10px;background:#121214;border:1px solid #29292e;color:#fff;border-radius:4px;"></textarea>
+    <button type="submit" class="btn" style="margin-top:10px;">Enviar</button>
+</form>
+{% endblock %}

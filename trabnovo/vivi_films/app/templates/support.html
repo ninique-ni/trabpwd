@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="card" style="max-width: 620px; margin: 30px auto;">
+    <h2 style="color:#e50914; text-align:center;">🆘 Suporte</h2>
+
+    <p style="color:#aaa;text-align:center;margin-bottom:25px;">
+        Precisa de ajuda? Entre em contato pelo e-mail abaixo.
+    </p>
+
+    <div style="background:#121214;padding:20px;border-radius:8px;border:1px solid #29292e;text-align:center;margin-bottom:25px;">
+        <p style="color:#888;font-size:13px;margin-bottom:8px;">E-mail de Suporte</p>
+        <a href="mailto:{{ admin_email }}"
+           style="color:#e50914;font-size:18px;font-weight:bold;text-decoration:none;">
+            {{ admin_email }}
+        </a>
+    </div>
+
+    <h3 style="margin-bottom:12px;">Perguntas Frequentes</h3>
+
+    <details style="background:#121214;padding:14px;border-radius:6px;margin-bottom:10px;cursor:pointer;">
+        <summary style="font-weight:bold;color:#e50914;">Como funciona o catálogo de filmes?</summary>
+        <p style="color:#ccc;margin-top:10px;font-size:14px;">
+            Existem dois tipos: <strong>Filmes Lançados</strong> (aparecem por 15 dias e depois são
+            removidos automaticamente) e <strong>Catálogo Geral</strong> (permanente).
+        </p>
+    </details>
+
+    <details style="background:#121214;padding:14px;border-radius:6px;margin-bottom:10px;cursor:pointer;">
+        <summary style="font-weight:bold;color:#e50914;">Como ganho conquistas?</summary>
+        <p style="color:#ccc;margin-top:10px;font-size:14px;">
+            Avaliando filmes, enviando mensagens nos chats e adicionando gêneros variados
+            à sua biblioteca. Veja todas em "Conquistas" no menu.
+        </p>
+    </details>
+
+    <details style="background:#121214;padding:14px;border-radius:6px;margin-bottom:10px;cursor:pointer;">
+        <summary style="font-weight:bold;color:#e50914;">Posso mudar meu nome de usuário?</summary>
+        <p style="color:#ccc;margin-top:10px;font-size:14px;">
+            Sim, mas apenas uma vez a cada 7 dias. Acesse "Perfil" para alterar.
+        </p>
+    </details>
+
+    <details style="background:#121214;padding:14px;border-radius:6px;cursor:pointer;">
+        <summary style="font-weight:bold;color:#e50914;">Como funcionam os chats?</summary>
+        <p style="color:#ccc;margin-top:10px;font-size:14px;">
+            O sistema conecta automaticamente você com outros usuários que curtem os mesmos
+            gêneros que você. Ambos precisam aceitar para o chat ser liberado.
+        </p>
+    </details>
+</div>
+{% endblock %}
